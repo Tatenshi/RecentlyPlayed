@@ -38,7 +38,7 @@ MAKE_HOOK_MATCH(SelectLevelCategoryViewControllerDidActivateHook, &GlobalNamespa
         // Resize the ViewController so we have enough click space to make all categorys usable
         self->get_rectTransform()->set_sizeDelta({45,15});
         // Move the Page selection a bit to the left, so that our new page has enough space
-        self->levelFilterCategoryIconSegmentedControl->get_transform()->set_localPosition({45,-8,0});
+        self->levelFilterCategoryIconSegmentedControl->get_transform()->set_localPosition({45,-7.5,0});
     }
     SelectLevelCategoryViewControllerDidActivateHook(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
