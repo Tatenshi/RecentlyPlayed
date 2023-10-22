@@ -3,8 +3,8 @@
 name: NDK build
 
 env:
-    module_id: BSNightcoreQuest
-    qmodName: BSNightcoreQuest
+    module_id: RecentlyPlayed
+    qmodName: RecentlyPlayed
 
 on:
   workflow_dispatch:
