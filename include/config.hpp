@@ -8,4 +8,5 @@ DECLARE_CONFIG(ModConfig,
     CONFIG_VALUE(History, std::vector<std::string>, "History of played hashes", {});
     CONFIG_VALUE(FilterDuplicates, bool, "Filter duplicates", false);
     CONFIG_VALUE(Length, int, "Max History Length (after next map)", 100);
+    CONFIG_VALUE(RecordReplay, bool, "Record watched Replays", false);
 )

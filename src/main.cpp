@@ -40,6 +40,8 @@ MAKE_HOOK_MATCH(SelectLevelCategoryViewControllerDidActivateHook, &GlobalNamespa
         // Move the Page selection a bit to the left, so that our new page has enough space
         self->levelFilterCategoryIconSegmentedControl->get_transform()->set_localPosition({45,-7.5,0});
     }
+
+    // Base Call
     SelectLevelCategoryViewControllerDidActivateHook(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
 
@@ -111,15 +113,20 @@ MAKE_HOOK_MATCH(LevelFilteringNavigationControllerUpdateSecondChildControllerCon
     }
 }
 
-MAKE_HOOK_MATCH(GameplayCoreInstallBindings, &GlobalNamespace::GameplayCoreInstaller::InstallBindings, void, GlobalNamespace::GameplayCoreInstaller* self) {
+MAKE_HOOK_MATCH(GameplayCoreInstallBindings, &GlobalNamespace::GameplayCoreInstaller::InstallBindings, void, GlobalNamespace::GameplayCoreInstaller* self) 
+{
     GameplayCoreInstallBindings(self);
 
-    // Record the played song in our mod config
-    auto historyVector = getModConfig().History.GetValue();
-    historyVector.insert(historyVector.begin(), il2cpp_utils::cast<GlobalNamespace::IPreviewBeatmapLevel>(self->sceneSetupData->difficultyBeatmap->get_level())->get_levelID());
-    // Ensure, that we dont exceed the maximum size
-    historyVector.resize(getModConfig().Length.GetValue());
-    getModConfig().History.SetValue(historyVector);
+    // We can record the current play if replay is not installed, we are not in a replay or we are allowed to record replays
+    if(!ReplayInstalled() || !IsInReplay() || getModConfig().RecordReplay.GetValue())
+    {
+        // Record the played song in our mod config
+        auto historyVector = getModConfig().History.GetValue();
+        historyVector.insert(historyVector.begin(), il2cpp_utils::cast<GlobalNamespace::IPreviewBeatmapLevel>(self->sceneSetupData->difficultyBeatmap->get_level())->get_levelID());
+        // Ensure, that we dont exceed the maximum size
+        historyVector.resize(getModConfig().Length.GetValue());
+        getModConfig().History.SetValue(historyVector);
+    }
 }
 
 
@@ -133,6 +140,11 @@ void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToH
         
         // Add Options
         AddConfigValueToggle(container->get_transform(), getModConfig().FilterDuplicates);
+        // This toggle makes no sense, if replay is not installed. So we just disable it
+        if(ReplayInstalled())
+        {
+            AddConfigValueToggle(container->get_transform(), getModConfig().RecordReplay);
+        }
         AddConfigValueIncrementInt(container->get_transform(), getModConfig().Length, 1, 1, 500);
         QuestUI::BeatSaberUI::CreateUIButton(container->get_transform(), "Clear History", []() {
             getModConfig().History.SetValue({});

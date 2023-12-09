@@ -31,6 +31,8 @@
 // Include the modloader header, which allows us to tell the modloader which mod this is, and the version etc.
 #include "modloader/shared/modloader.hpp"
 
+#include "conditional-dependencies/shared/main.hpp"
+
 #include "songloader/shared/API.hpp"
 
 #include "include/logger.hpp"
@@ -38,3 +40,13 @@
 #include "include/icon.hpp"
 
 void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling);
+
+inline bool IsInReplay() noexcept
+{
+    static auto function = CondDeps::FindUnsafe<bool>("replay", "IsInReplay");
+    return function.value()();
+}
+inline bool ReplayInstalled() noexcept
+{
+    return !!CondDeps::FindUnsafe<bool, std::string>("replay", "PlayBSORFromFile");
+}
