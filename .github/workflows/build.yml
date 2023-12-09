@@ -70,7 +70,6 @@ jobs:
     - name: Build
       run: |
         cd ${GITHUB_WORKSPACE}
-        ./QPM/qpm qmod build
         pwsh -Command ./build.ps1
     - name: Create Qmod
       run: |

@@ -10,9 +10,7 @@
   "coverImage": "",
   "description": "Adds a history tab that displays the most recently played maps",
   "dependencies": [],
-  "modFiles": [
-    "libRecentlyPlayed.so"
-  ],
+  "modFiles": [],
   "libraryFiles": [],
   "fileCopies": []
 }
