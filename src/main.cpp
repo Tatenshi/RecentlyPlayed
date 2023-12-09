@@ -49,7 +49,7 @@ MAKE_HOOK_MATCH(LevelFilteringNavigationControllerDidActivateHook, &GlobalNamesp
 {
     // Always refresh content, because if we are on the recently played tab the content can change when the player starts a song (needs to be prepended)
     // If we are added to hierarchy the base call does this for us
-    if(!addedToHierarchy)
+    if(!addedToHierarchy && self->selectLevelCategoryViewController->get_selectedLevelCategory() == historyCategorie)
     {
         self->UpdateSecondChildControllerContent(self->selectLevelCategoryViewController->get_selectedLevelCategory());
     }
