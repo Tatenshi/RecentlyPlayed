@@ -125,11 +125,11 @@ MAKE_HOOK_MATCH(LevelFilteringNavigationControllerUpdateSecondChildControllerCon
     }
     else
     {
-        // Make sure, the Playlist/Package selection is active, when we are not on the history tab
-        self->annotatedBeatmapLevelCollectionsViewController->get_gameObject()->set_active(true);
         // And just call base
         LevelFilteringNavigationControllerUpdateSecondChildControllerContentHook(self, levelCategory);
     }
+    // Make sure, the Playlist/Package selection is active, when we are not on the history tab (only relevant for tab 1 or 2 (Favorites and Filter doesnt have it anyways))
+    self->annotatedBeatmapLevelCollectionsViewController->get_gameObject()->set_active(levelCategory.value <= 2);
 }
 
 MAKE_HOOK_MATCH(GameplayCoreInstallBindings, &GlobalNamespace::GameplayCoreInstaller::InstallBindings, void, GlobalNamespace::GameplayCoreInstaller* self) 
