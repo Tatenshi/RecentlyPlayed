@@ -2,6 +2,8 @@
 
 static GlobalNamespace::SelectLevelCategoryViewController::LevelCategory historyCategorie = 5;
 
+static bool disableVCScroll = false;
+
 MAKE_HOOK_MATCH(SelectLevelCategoryViewControllerSetupHook, &GlobalNamespace::SelectLevelCategoryViewController::Setup, void, GlobalNamespace::SelectLevelCategoryViewController *self, GlobalNamespace::SelectLevelCategoryViewController::LevelCategory selectedCategory, ArrayW<GlobalNamespace::SelectLevelCategoryViewController::LevelCategory> enabledLevelCategories)
 {
     if(self->allLevelCategoryInfos->Length() == 4)
@@ -45,13 +47,30 @@ MAKE_HOOK_MATCH(SelectLevelCategoryViewControllerDidActivateHook, &GlobalNamespa
     SelectLevelCategoryViewControllerDidActivateHook(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
 
+MAKE_HOOK_MATCH(ScrollViewScrollToHook, &HMUI::ScrollView::ScrollTo, void, HMUI::ScrollView *self, float x, bool animated)
+{
+    if(!disableVCScroll){
+        ScrollViewScrollToHook(self, x, animated);
+    }
+}
+
+MAKE_HOOK_MATCH(LevelCollectionNavigationControllerPresentViewControllersForPackHook, &GlobalNamespace::LevelCollectionNavigationController::PresentViewControllersForPack, void, GlobalNamespace::LevelCollectionNavigationController *self)
+{
+    if(!disableVCScroll){
+        LevelCollectionNavigationControllerPresentViewControllersForPackHook(self);
+    }
+}
+
 MAKE_HOOK_MATCH(LevelFilteringNavigationControllerDidActivateHook, &GlobalNamespace::LevelFilteringNavigationController::DidActivate, void, GlobalNamespace::LevelFilteringNavigationController *self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     // Always refresh content, because if we are on the recently played tab the content can change when the player starts a song (needs to be prepended)
     // If we are added to hierarchy the base call does this for us
     if(!addedToHierarchy && self->selectLevelCategoryViewController->get_selectedLevelCategory() == historyCategorie)
     {
+        // We need to temporarily disable the scrolling of the viewcontroller, which happens when setting new data
+        disableVCScroll = true;
         self->UpdateSecondChildControllerContent(self->selectLevelCategoryViewController->get_selectedLevelCategory());
+        disableVCScroll = false;
     }
 
     // Base call
@@ -181,5 +200,7 @@ extern "C" void load()
     INSTALL_HOOK_ORIG(getLogger(), LevelFilteringNavigationControllerUpdateSecondChildControllerContentHook);
     INSTALL_HOOK(getLogger(), GameplayCoreInstallBindings);
     INSTALL_HOOK(getLogger(), LevelFilteringNavigationControllerDidActivateHook);
+    INSTALL_HOOK_ORIG(getLogger(), ScrollViewScrollToHook);
+    INSTALL_HOOK_ORIG(getLogger(), LevelCollectionNavigationControllerPresentViewControllersForPackHook);
     getLogger().info("Installed all hooks!");
 }
