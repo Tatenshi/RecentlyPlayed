@@ -43,13 +43,24 @@ MAKE_HOOK_MATCH(SelectLevelCategoryViewControllerDidActivateHook, &GlobalNamespa
     SelectLevelCategoryViewControllerDidActivateHook(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
 
+MAKE_HOOK_MATCH(LevelFilteringNavigationControllerDidActivateHook, &GlobalNamespace::LevelFilteringNavigationController::DidActivate, void, GlobalNamespace::LevelFilteringNavigationController *self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+{
+    // Always refresh content, because if we are on the recently played tab the content can change when the player starts a song (needs to be prepended)
+    // If we are added to hierarchy the base call does this for us
+    if(!addedToHierarchy)
+    {
+        self->UpdateSecondChildControllerContent(self->selectLevelCategoryViewController->get_selectedLevelCategory());
+    }
+
+    // Base call
+    LevelFilteringNavigationControllerDidActivateHook(self, firstActivation, addedToHierarchy, screenSystemEnabling);
+}
+
 MAKE_HOOK_MATCH(LevelFilteringNavigationControllerUpdateSecondChildControllerContentHook, &GlobalNamespace::LevelFilteringNavigationController::UpdateSecondChildControllerContent, void, GlobalNamespace::LevelFilteringNavigationController *self, GlobalNamespace::SelectLevelCategoryViewController::LevelCategory levelCategory)
 {
     // If our history catergory is selected we cant call into base, as it would throw an argument exception in the switch
     if(levelCategory == historyCategorie)
     {
-        // Disable Package/Playlist selection, because it is useless in the history
-        self->annotatedBeatmapLevelCollectionsViewController->get_gameObject()->set_active(false);
         // Select the header of the songs
         self->currentNoDataInfoPrefab = self->emptyCustomSongListInfoPrefab;
 
@@ -87,6 +98,9 @@ MAKE_HOOK_MATCH(LevelFilteringNavigationControllerUpdateSecondChildControllerCon
         auto historyLevelPackList = System::Collections::Generic::List_1<GlobalNamespace::IBeatmapLevelPack*>::New_ctor();
         historyLevelPackList->Add(il2cpp_utils::cast<GlobalNamespace::IBeatmapLevelPack>(historyLevelPack));
         self->ShowPacksInSecondChildController(il2cpp_utils::cast<System::Collections::Generic::IReadOnlyList_1<GlobalNamespace::IBeatmapLevelPack*>>(historyLevelPackList));
+
+        // Disable Package/Playlist selection, because it is useless in the history
+        self->annotatedBeatmapLevelCollectionsViewController->get_gameObject()->set_active(false);
     }
     else
     {
@@ -154,5 +168,6 @@ extern "C" void load()
     INSTALL_HOOK(getLogger(), SelectLevelCategoryViewControllerDidActivateHook);
     INSTALL_HOOK_ORIG(getLogger(), LevelFilteringNavigationControllerUpdateSecondChildControllerContentHook);
     INSTALL_HOOK(getLogger(), GameplayCoreInstallBindings);
+    INSTALL_HOOK(getLogger(), LevelFilteringNavigationControllerDidActivateHook);
     getLogger().info("Installed all hooks!");
 }
