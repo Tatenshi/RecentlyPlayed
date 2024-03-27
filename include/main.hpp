@@ -9,33 +9,24 @@
 
 // Includes for the functionality of the mod
 #include "GlobalNamespace/SelectLevelCategoryViewController.hpp"
-#include "GlobalNamespace/SelectLevelCategoryViewController_LevelCategoryInfo.hpp"
 #include "GlobalNamespace/LevelFilteringNavigationController.hpp"
 #include "GlobalNamespace/LevelCollectionNavigationController.hpp"
-#include "GlobalNamespace/IBeatmapLevelPack.hpp"
 #include "GlobalNamespace/AnnotatedBeatmapLevelCollectionsViewController.hpp"
 #include "GlobalNamespace/GameplayCoreInstaller.hpp"
 #include "GlobalNamespace/GameCoreSceneSetupData.hpp"
-#include "GlobalNamespace/GameplayCoreSceneSetupData_-GetTransformedBeatmapDataAsync-d__15.hpp"
-#include "GlobalNamespace/GameplayCoreSceneSetupData_-LoadTransformedBeatmapDataAsync-d__14.hpp"
-#include "GlobalNamespace/IDifficultyBeatmap.hpp"
-#include "GlobalNamespace/IBeatmapLevel.hpp"
-#include "GlobalNamespace/IPreviewBeatmapLevel.hpp"
+#include "GlobalNamespace/GameplayCoreSceneSetupData.hpp"
 #include "HMUI/IconSegmentedControl.hpp"
 #include "HMUI/ScrollView.hpp"
 #include "System/Collections/Generic/List_1.hpp"
 #include "System/Collections/Generic/IReadOnlyList_1.hpp"
 #include "System/Array.hpp"
-#include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/QuestUI.hpp"
 #include "HMUI/Touchable.hpp"
 
-// Include the modloader header, which allows us to tell the modloader which mod this is, and the version etc.
-#include "modloader/shared/modloader.hpp"
+#include "bsml/shared/BSML.hpp"
 
 #include "conditional-dependencies/shared/main.hpp"
 
-#include "songloader/shared/API.hpp"
+#include "songcore/shared/SongCore.hpp"
 
 #include "include/logger.hpp"
 #include "include/config.hpp"
