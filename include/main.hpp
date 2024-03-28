@@ -15,6 +15,7 @@
 #include "GlobalNamespace/GameplayCoreInstaller.hpp"
 #include "GlobalNamespace/GameCoreSceneSetupData.hpp"
 #include "GlobalNamespace/GameplayCoreSceneSetupData.hpp"
+#include "GlobalNamespace/BeatmapLevelsModel.hpp"
 #include "HMUI/IconSegmentedControl.hpp"
 #include "HMUI/ScrollView.hpp"
 #include "System/Collections/Generic/List_1.hpp"

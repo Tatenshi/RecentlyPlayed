@@ -105,12 +105,16 @@ MAKE_HOOK_MATCH(LevelFilteringNavigationControllerUpdateSecondChildControllerCon
         }
 
         // Load the PreviewBeatmapLevels from songloader api, if we still have it locally
-        std::vector<SongCore::SongLoader::CustomBeatmapLevel*> historyLevelVector = {};
+        std::vector<GlobalNamespace::BeatmapLevel*> historyLevelVector = {};
         for(auto levelid : historyIDVector)
         {
-            if(auto level = SongCore::API::Loading::GetLevelByLevelID(levelid))
+            if(self->_beatmapLevelsModel)
             {
-                historyLevelVector.push_back(level);
+                GlobalNamespace::BeatmapLevel* beatmapLevel = self->_beatmapLevelsModel->GetBeatmapLevel(levelid);
+                if (beatmapLevel) 
+                {
+                    historyLevelVector.push_back(beatmapLevel);
+                }
             }
         }
 
