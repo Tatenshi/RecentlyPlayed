@@ -1,4 +1,6 @@
 # RecentlyPlayed
+![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/tatenshi/RecentlyPlayed/latest/total)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/tatenshi/RecentlyPlayed/total)
 
 Adds a history tab that displays the most recently played maps
 
