@@ -62,11 +62,6 @@
       "additionalData": {}
     },
     {
-      "id": "paper",
-      "versionRange": "^3.6.3",
-      "additionalData": {}
-    },
-    {
       "id": "songcore",
       "versionRange": "^1.1.14",
       "additionalData": {}

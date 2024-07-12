@@ -23,7 +23,7 @@
     {
       "version": "^3.6.3",
       "id": "paper",
-      "downloadIfMissing": "https://github.com/Fernthedev/paperlog/releases/download/v3.6.3/paperlog.qmod"
+      "downloadIfMissing": "https://github.com/Fernthedev/paperlog/releases/download/v3.6.4/paperlog.qmod"
     },
     {
       "version": "^1.1.14",
@@ -36,8 +36,7 @@
     "libRecentlyPlayed.so"
   ],
   "libraryFiles": [
-    "libbeatsaber-hook_5_1_9.so",
-    "libsl2.so"
+    "libbeatsaber-hook_5_1_9.so"
   ],
   "fileCopies": [],
   "copyExtensions": []
