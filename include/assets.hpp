@@ -4,6 +4,10 @@
 
 #include "beatsaber-hook/shared/utils/typedefs.h"
 
+#if __has_include("bsml/shared/Helpers/utilities.hpp")
+#include "bsml/shared/Helpers/utilities.hpp"
+#endif
+
 struct IncludedAsset {
     IncludedAsset(uint8_t* start, uint8_t* end) : array(reinterpret_cast<Array<uint8_t>*>(start)) {
         array->klass = nullptr;
