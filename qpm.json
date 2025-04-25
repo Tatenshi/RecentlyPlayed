@@ -1,5 +1,4 @@
 {
-  "$schema": "https://raw.githubusercontent.com/QuestPackageManager/QPM.Package/refs/heads/main/qpm.schema.json",
   "version": "0.1.0",
   "sharedDir": "shared",
   "dependenciesDir": "extern",
@@ -40,13 +39,7 @@
         "pwsh pull-tombstone.ps1"
       ]
     },
-    "ndk": "^27.2.12479018",
-    "qmodIncludeDirs": [
-      "build",
-      "extern/libs"
-    ],
-    "qmodIncludeFiles": [],
-    "qmodOutput": "./RecentlyPlayed.qmod"
+    "ndk": "^27.2.12479018"
   },
   "dependencies": [
     {
@@ -80,11 +73,6 @@
       "additionalData": {}
     },
     {
-      "id": "mmkay",
-      "versionRange": "^0.2.1",
-      "additionalData": {}
-    },
-    {
       "id": "paper2_scotland2",
       "versionRange": "^4.6.1",
       "additionalData": {}
@@ -100,6 +88,11 @@
     {
       "id": "songcore",
       "versionRange": "^1.1.20",
+      "additionalData": {}
+    },
+    {
+      "id": "metacore",
+      "versionRange": "^1.0.0",
       "additionalData": {}
     }
   ]

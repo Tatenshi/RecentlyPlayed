@@ -14,7 +14,7 @@ MAKE_HOOK_MATCH(SelectLevelCategoryViewControllerSetupHook, &GlobalNamespace::Se
         auto historyLevelCategoryInfo = GlobalNamespace::SelectLevelCategoryViewController::LevelCategoryInfo::New_ctor();
         historyLevelCategoryInfo->levelCategory = historyCategorie;
         historyLevelCategoryInfo->localizedKey = "";
-        historyLevelCategoryInfo->categoryIcon = PNG_SPRITE(IncludedAssets::icon_png);
+        historyLevelCategoryInfo->categoryIcon = PNG_SPRITE(icon);
 
         // Extend allLevelCategoryinfos with our HistoryCategoryInfo
         auto extendedLevelCategorieInfos = Array<GlobalNamespace::SelectLevelCategoryViewController::LevelCategoryInfo *>::NewLength(5);
@@ -122,7 +122,7 @@ MAKE_HOOK_MATCH(LevelFilteringNavigationControllerUpdateSecondChildControllerCon
 
         // Package our new collection in a BeatmapLevelPack and push it into the ViewController
         // auto collection = GlobalNamespace::CustomBeatmapLevelCollection::New_ctor(il2cpp_utils::vectorToArray(historyLevelVector));
-        auto historySprite = PNG_SPRITE(IncludedAssets::icon_png);
+        auto historySprite = PNG_SPRITE(icon);
         auto historyLevelPack = SongCore::SongLoader::CustomLevelPack::New("custom_levelPack_HLP","Recently Played", historySprite);
         historyLevelPack->SetLevels(historyLevelVector);
         auto historyLevelPackList = System::Collections::Generic::List_1<GlobalNamespace::BeatmapLevelPack*>::New_ctor();

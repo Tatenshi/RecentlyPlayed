@@ -106,4 +106,4 @@ add_custom_command(TARGET ${COMPILE_ID} POST_BUILD
         COMMENT "Copy a files for ndk stack")
         endforeach()
 
-include(${EXTERN_DIR}/includes/mmkay/shared/mmkay.cmake)
+include(${EXTERN_DIR}/includes/metacore/shared/assets.cmake)
