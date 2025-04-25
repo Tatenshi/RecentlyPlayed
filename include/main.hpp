@@ -31,7 +31,7 @@
 
 #include "include/logger.hpp"
 #include "include/config.hpp"
-#include "include/icon.hpp"
+#include "include/assets.hpp"
 
 void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling);
 

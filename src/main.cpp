@@ -1,4 +1,6 @@
 #include "main.hpp"
+#include "assets.hpp"
+#include "bsml/shared/Helpers/utilities.hpp"
 
 static GlobalNamespace::SelectLevelCategoryViewController::LevelCategory historyCategorie = 5;
 
@@ -12,7 +14,7 @@ MAKE_HOOK_MATCH(SelectLevelCategoryViewControllerSetupHook, &GlobalNamespace::Se
         auto historyLevelCategoryInfo = GlobalNamespace::SelectLevelCategoryViewController::LevelCategoryInfo::New_ctor();
         historyLevelCategoryInfo->levelCategory = historyCategorie;
         historyLevelCategoryInfo->localizedKey = "";
-        historyLevelCategoryInfo->categoryIcon = BSML::Lite::Base64ToSprite(historyIcon);
+        historyLevelCategoryInfo->categoryIcon = PNG_SPRITE(IncludedAssets::icon_png);
 
         // Extend allLevelCategoryinfos with our HistoryCategoryInfo
         auto extendedLevelCategorieInfos = Array<GlobalNamespace::SelectLevelCategoryViewController::LevelCategoryInfo *>::NewLength(5);
@@ -20,7 +22,7 @@ MAKE_HOOK_MATCH(SelectLevelCategoryViewControllerSetupHook, &GlobalNamespace::Se
         auto extendedLevelCategorieInfosW = ArrayW<GlobalNamespace::SelectLevelCategoryViewController::LevelCategoryInfo *>(extendedLevelCategorieInfos);
         self->_allLevelCategoryInfos.copy_to(extendedLevelCategorieInfosW, 0);
         extendedLevelCategorieInfosW[4] = historyLevelCategoryInfo;
-        self->_allLevelCategoryInfos = extendedLevelCategorieInfosW;        
+        self->_allLevelCategoryInfos = extendedLevelCategorieInfosW;
     }
 
     // Extend EnabledCategories with our history category
@@ -111,7 +113,7 @@ MAKE_HOOK_MATCH(LevelFilteringNavigationControllerUpdateSecondChildControllerCon
             if(self->_beatmapLevelsModel)
             {
                 GlobalNamespace::BeatmapLevel* beatmapLevel = self->_beatmapLevelsModel->GetBeatmapLevel(levelid);
-                if (beatmapLevel) 
+                if (beatmapLevel)
                 {
                     historyLevelVector.push_back(beatmapLevel);
                 }
@@ -120,7 +122,7 @@ MAKE_HOOK_MATCH(LevelFilteringNavigationControllerUpdateSecondChildControllerCon
 
         // Package our new collection in a BeatmapLevelPack and push it into the ViewController
         // auto collection = GlobalNamespace::CustomBeatmapLevelCollection::New_ctor(il2cpp_utils::vectorToArray(historyLevelVector));
-        auto historySprite = BSML::Lite::Base64ToSprite(historyIcon);
+        auto historySprite = PNG_SPRITE(IncludedAssets::icon_png);
         auto historyLevelPack = SongCore::SongLoader::CustomLevelPack::New("custom_levelPack_HLP","Recently Played", historySprite);
         historyLevelPack->SetLevels(historyLevelVector);
         auto historyLevelPackList = System::Collections::Generic::List_1<GlobalNamespace::BeatmapLevelPack*>::New_ctor();
@@ -138,7 +140,7 @@ MAKE_HOOK_MATCH(LevelFilteringNavigationControllerUpdateSecondChildControllerCon
     }
 }
 
-MAKE_HOOK_MATCH(GameplayCoreInstallBindings, &GlobalNamespace::GameplayCoreInstaller::InstallBindings, void, GlobalNamespace::GameplayCoreInstaller* self) 
+MAKE_HOOK_MATCH(GameplayCoreInstallBindings, &GlobalNamespace::GameplayCoreInstaller::InstallBindings, void, GlobalNamespace::GameplayCoreInstaller* self)
 {
     GameplayCoreInstallBindings(self);
 
@@ -162,7 +164,7 @@ void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToH
 
         // Create Container
         auto* container = BSML::Lite::CreateScrollableSettingsContainer(self->get_transform());
-        
+
         // Add Options
         AddConfigValueToggle(container->get_transform(), getModConfig().FilterDuplicates);
         // This toggle makes no sense, if replay is not installed. So we just disable it
