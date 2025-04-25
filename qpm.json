@@ -39,7 +39,8 @@
         "pwsh pull-tombstone.ps1"
       ]
     },
-    "ndk": "^27.2.12479018"
+    "ndk": "^27.2.12479018",
+    "qmodOutput": "./RecentlyPlayed.qmod"
   },
   "dependencies": [
     {
