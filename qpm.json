@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/QuestPackageManager/QPM.Package/refs/heads/main/qpm.schema.json",
   "version": "0.1.0",
   "sharedDir": "shared",
   "dependenciesDir": "extern",
@@ -15,31 +16,36 @@
   "workspace": {
     "scripts": {
       "build": [
-        "pwsh build.ps1"
+        "pwsh build.ps1 $0:?"
       ],
       "clean": [
         "pwsh build.ps1 -clean"
       ],
       "copy": [
-        "pwsh copy.ps1"
+        "pwsh copy.ps1 $0:?"
       ],
       "log": [
-        "pwsh start-logging.ps1"
+        "pwsh start-logging.ps1 $0:?"
       ],
       "qmod": [
-        "pwsh createqmod.ps1"
+        "pwsh createqmod.ps1 $0:?"
       ],
       "restart": [
-        "pwsh restart-game.ps1"
+        "pwsh restart-game.ps1 $0:?"
       ],
       "stack": [
-        "pwsh ndk-stack.ps1"
+        "pwsh ndk-stack.ps1 $0:?"
       ],
       "tomb": [
-        "pwsh pull-tombstone.ps1"
+        "pwsh pull-tombstone.ps1 $0:?"
       ]
     },
     "ndk": "^27.2.12479018",
+    "qmodIncludeDirs": [
+      "./build",
+      "./extern/libs"
+    ],
+    "qmodIncludeFiles": [],
     "qmodOutput": "./RecentlyPlayed.qmod"
   },
   "dependencies": [
