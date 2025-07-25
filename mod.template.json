@@ -7,7 +7,7 @@
   "version": "${version}",
   "modloader": "Scotland2",
   "packageId": "com.beatgames.beatsaber",
-  "packageVersion": "1.40.7_7060",
+  "packageVersion": "1.40.8_7379",
   "coverImage": "cover.png",
   "description": "Adds a history tab that displays the most recently played maps",
   "dependencies": [],
