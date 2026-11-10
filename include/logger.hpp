@@ -1,7 +1,7 @@
 #pragma once
 
-#include "beatsaber-hook/shared/utils/logging.hpp"
-#include "beatsaber-hook/shared/config/config-utils.hpp"
+#include "paper2_scotland2/shared/logger.hpp"
+#include "config-utils/shared/config-utils.hpp"
 
 // Include the modloader header, which allows us to tell the modloader which mod this is, and the version etc.
 #include "scotland2/shared/loader.hpp"

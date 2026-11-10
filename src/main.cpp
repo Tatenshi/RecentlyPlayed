@@ -1,40 +1,73 @@
 #include "main.hpp"
 #include "assets.hpp"
+#include "HistoryLevelCategoryInfo.hpp"
+#include "custom-types/shared/register.hpp"
 #include "bsml/shared/Helpers/utilities.hpp"
+#include "System/Collections/Generic/List_1.hpp"
+#include "System/Type.hpp"
 
-static GlobalNamespace::SelectLevelCategoryViewController::LevelCategory historyCategorie = 5;
+#include <algorithm>
+
+using LevelCategory = GlobalNamespace::SelectLevelCategoryViewController::LevelCategory;
+using LevelCategoryInfo = GlobalNamespace::SelectLevelCategoryViewController::LevelCategoryInfo;
+
+static RecentlyPlayed::HistoryLevelCategoryInfo* GetHistoryCategoryInfo(GlobalNamespace::SelectLevelCategoryViewController* self)
+{
+    if(!self || !self->_allLevelCategoryInfos) return nullptr;
+    for(auto* info : self->_allLevelCategoryInfos)
+    {
+        if(auto* historyInfo = i2c::try_cast<RecentlyPlayed::HistoryLevelCategoryInfo*>(info))
+        {
+            return historyInfo;
+        }
+    }
+    return nullptr;
+}
 
 static bool disableVCScroll = false;
 
 MAKE_HOOK_MATCH(SelectLevelCategoryViewControllerSetupHook, &GlobalNamespace::SelectLevelCategoryViewController::Setup, void, GlobalNamespace::SelectLevelCategoryViewController *self, GlobalNamespace::SelectLevelCategoryViewController::LevelCategory selectedCategory, ArrayW<GlobalNamespace::SelectLevelCategoryViewController::LevelCategory> enabledLevelCategories)
 {
-    if(self->_allLevelCategoryInfos.size() == 4)
+    auto* historyLevelCategoryInfo = GetHistoryCategoryInfo(self);
+    if(!historyLevelCategoryInfo)
     {
-        // Create new history CategoryInfo
-        auto historyLevelCategoryInfo = GlobalNamespace::SelectLevelCategoryViewController::LevelCategoryInfo::New_ctor();
-        historyLevelCategoryInfo->levelCategory = historyCategorie;
+        // Reserve a value above all built-in and currently registered categories.
+        auto nextCategoryValue = LevelCategory::None.value__;
+        auto builtInCategories = ArrayW<LevelCategory>(static_cast<System::Type*>(i2c::cs_type_of<LevelCategory>())->GetEnumValues());
+        for(auto category : builtInCategories)
+        {
+            nextCategoryValue = std::max(nextCategoryValue, category.value__);
+        }
+        for(auto* info : self->_allLevelCategoryInfos)
+        {
+            nextCategoryValue = std::max(nextCategoryValue, info->levelCategory.value__);
+        }
+        for(auto category : enabledLevelCategories)
+        {
+            nextCategoryValue = std::max(nextCategoryValue, category.value__);
+        }
+
+        historyLevelCategoryInfo = RecentlyPlayed::HistoryLevelCategoryInfo::New_ctor();
+        historyLevelCategoryInfo->levelCategory = LevelCategory(nextCategoryValue + 1);
         historyLevelCategoryInfo->localizedKey = "";
         historyLevelCategoryInfo->categoryIcon = PNG_SPRITE(icon);
 
-        // Extend allLevelCategoryinfos with our HistoryCategoryInfo
-        auto extendedLevelCategorieInfos = Array<GlobalNamespace::SelectLevelCategoryViewController::LevelCategoryInfo *>::NewLength(5);
-        // self->_allLevelCategoryInfos->CopyTo(extendedLevelCategorieInfos, 0);
-        auto extendedLevelCategorieInfosW = ArrayW<GlobalNamespace::SelectLevelCategoryViewController::LevelCategoryInfo *>(extendedLevelCategorieInfos);
-        self->_allLevelCategoryInfos.copy_to(extendedLevelCategorieInfosW, 0);
-        extendedLevelCategorieInfosW[4] = historyLevelCategoryInfo;
-        self->_allLevelCategoryInfos = extendedLevelCategorieInfosW;
+        auto extendedLevelCategoryInfos = ArrayW<LevelCategoryInfo*>(self->_allLevelCategoryInfos.size() + 1);
+        self->_allLevelCategoryInfos.copy_to(extendedLevelCategoryInfos, 0);
+        extendedLevelCategoryInfos.back() = historyLevelCategoryInfo;
+        self->_allLevelCategoryInfos = extendedLevelCategoryInfos;
     }
 
-    // Extend EnabledCategories with our history category
-    auto extendedLevelCategories = Array<GlobalNamespace::SelectLevelCategoryViewController::LevelCategory>::NewLength(enabledLevelCategories.size() + 1);
-    // enabledLevelCategories->CopyTo(extendedLevelCategories, 0);
-    auto extendedLevelCategoriesW = ArrayW<GlobalNamespace::SelectLevelCategoryViewController::LevelCategory>(extendedLevelCategories);
-    enabledLevelCategories.copy_to(extendedLevelCategoriesW, 0);
-    extendedLevelCategoriesW[extendedLevelCategoriesW.size() - 1] = historyCategorie;
+    const auto category = historyLevelCategoryInfo->levelCategory;
+    if(std::find(enabledLevelCategories.begin(), enabledLevelCategories.end(), category) == enabledLevelCategories.end())
+    {
+        auto extendedLevelCategories = ArrayW<LevelCategory>(enabledLevelCategories.size() + 1);
+        enabledLevelCategories.copy_to(extendedLevelCategories, 0);
+        extendedLevelCategories.back() = category;
+        enabledLevelCategories = extendedLevelCategories;
+    }
 
-
-    // Base Call
-    SelectLevelCategoryViewControllerSetupHook(self, selectedCategory, extendedLevelCategoriesW);
+    SelectLevelCategoryViewControllerSetupHook(self, selectedCategory, enabledLevelCategories);
 }
 
 MAKE_HOOK_MATCH(SelectLevelCategoryViewControllerDidActivateHook, &GlobalNamespace::SelectLevelCategoryViewController::DidActivate, void, GlobalNamespace::SelectLevelCategoryViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
@@ -69,7 +102,8 @@ MAKE_HOOK_MATCH(LevelFilteringNavigationControllerDidActivateHook, &GlobalNamesp
 {
     // Always refresh content, because if we are on the recently played tab the content can change when the player starts a song (needs to be prepended)
     // If we are added to hierarchy the base call does this for us
-    if(!addedToHierarchy && self->_selectLevelCategoryViewController->get_selectedLevelCategory() == historyCategorie)
+    const auto* historyInfo = GetHistoryCategoryInfo(self->_selectLevelCategoryViewController);
+    if(!addedToHierarchy && historyInfo && self->_selectLevelCategoryViewController->get_selectedLevelCategory() == historyInfo->levelCategory)
     {
         // We need to temporarily disable the scrolling of the viewcontroller, which happens when setting new data
         disableVCScroll = true;
@@ -84,7 +118,8 @@ MAKE_HOOK_MATCH(LevelFilteringNavigationControllerDidActivateHook, &GlobalNamesp
 MAKE_HOOK_MATCH(LevelFilteringNavigationControllerUpdateSecondChildControllerContentHook, &GlobalNamespace::LevelFilteringNavigationController::UpdateSecondChildControllerContent, void, GlobalNamespace::LevelFilteringNavigationController *self, GlobalNamespace::SelectLevelCategoryViewController::LevelCategory levelCategory)
 {
     // If our history catergory is selected we cant call into base, as it would throw an argument exception in the switch
-    if(levelCategory == historyCategorie)
+    const auto* historyInfo = GetHistoryCategoryInfo(self->_selectLevelCategoryViewController);
+    if(historyInfo && levelCategory == historyInfo->levelCategory)
     {
         // Select the header of the songs
         self->_currentNoDataInfoPrefab = self->_emptyCustomSongListInfoPrefab;
@@ -112,7 +147,7 @@ MAKE_HOOK_MATCH(LevelFilteringNavigationControllerUpdateSecondChildControllerCon
         {
             if(self->_beatmapLevelsModel)
             {
-                GlobalNamespace::BeatmapLevel* beatmapLevel = self->_beatmapLevelsModel->GetBeatmapLevel(levelid);
+                GlobalNamespace::BeatmapLevel* beatmapLevel = self->_beatmapLevelsModel->GetBeatmapLevel(levelid, false);
                 if (beatmapLevel)
                 {
                     historyLevelVector.push_back(beatmapLevel);
@@ -126,8 +161,8 @@ MAKE_HOOK_MATCH(LevelFilteringNavigationControllerUpdateSecondChildControllerCon
         auto historyLevelPack = SongCore::SongLoader::CustomLevelPack::New("custom_levelPack_HLP","Recently Played", historySprite);
         historyLevelPack->SetLevels(historyLevelVector);
         auto historyLevelPackList = System::Collections::Generic::List_1<GlobalNamespace::BeatmapLevelPack*>::New_ctor();
-        historyLevelPackList->Add(il2cpp_utils::cast<GlobalNamespace::BeatmapLevelPack>(historyLevelPack));
-        self->ShowPacksInSecondChildController(il2cpp_utils::cast<System::Collections::Generic::IReadOnlyList_1<GlobalNamespace::BeatmapLevelPack*>>(historyLevelPackList));
+        historyLevelPackList->Add(i2c::cast<GlobalNamespace::BeatmapLevelPack*>(historyLevelPack));
+        self->ShowPacksInSecondChildController(i2c::cast<System::Collections::Generic::IReadOnlyList_1<GlobalNamespace::BeatmapLevelPack*>*>(historyLevelPackList));
     }
     else
     {
@@ -194,7 +229,8 @@ extern "C" __attribute__((visibility("default"))) void setup(CModInfo* info)
 // Called later on in the game loading - a good time to install function hooks
 extern "C" __attribute__((visibility("default"))) void late_load()
 {
-    il2cpp_functions::Init();
+    i2c::functions::initialize();
+    custom_types::Register::AutoRegister();
 
     // Register our Settings
     BSML::Register::RegisterSettingsMenu("RecentlyPlayed", DidActivate, true);
